@@ -1,0 +1,22 @@
+{
+  "name": "crm-skipp-digital",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c magenta,cyan \"npm run dev --workspace backend\" \"npm run dev --workspace frontend\"",
+    "build": "npm run build --workspace frontend",
+    "typecheck": "npm run typecheck --workspace backend && npm run typecheck --workspace frontend",
+    "start": "npm run dev --workspace backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
