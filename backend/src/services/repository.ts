@@ -1,11 +1,11 @@
-import { db } from './supabase';
+import { db } from './supabase.js';
 import type {
   ConnectionRow,
   ConnectionStatus,
   LeadDataRow,
   LogRow,
   WebhookEventRow,
-} from '../types/meta';
+} from '../types/meta.js';
 
 export const CONNECTION_ID = '00000000-0000-0000-0000-000000000001';
 

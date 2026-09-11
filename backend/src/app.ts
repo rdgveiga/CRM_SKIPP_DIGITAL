@@ -1,12 +1,12 @@
 import express, { type ErrorRequestHandler } from 'express';
 import cors from 'cors';
-import { env } from './config/env';
-import { ApiError } from './lib/asyncHandler';
-import { error as logError } from './lib/logger';
-import { authRouter } from './routes/auth.routes';
-import { metaRouter } from './routes/meta.routes';
-import { statusRouter } from './routes/status.routes';
-import { webhookRouter } from './routes/webhook.routes';
+import { env } from './config/env.js';
+import { ApiError } from './lib/asyncHandler.js';
+import { error as logError } from './lib/logger.js';
+import { authRouter } from './routes/auth.routes.js';
+import { metaRouter } from './routes/meta.routes.js';
+import { statusRouter } from './routes/status.routes.js';
+import { webhookRouter } from './routes/webhook.routes.js';
 
 export const app = express();
 

@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { ApiError, asyncHandler } from '../lib/asyncHandler';
-import { error as logError } from '../lib/logger';
+import { ApiError, asyncHandler } from '../lib/asyncHandler.js';
+import { error as logError } from '../lib/logger.js';
 import {
   getAdAccounts,
   getLeadGenForms,
   getPages,
   sanitizeAdAccountId,
-} from '../services/metaGraph';
+} from '../services/metaGraph.js';
 import {
   getConnection,
   getConnectionStatus,
@@ -14,8 +14,8 @@ import {
   getLastWebhookEvent,
   getRecentLogs,
   saveSelections,
-} from '../services/repository';
-import type { ConnectionRow, MetaSelections } from '../types/meta';
+} from '../services/repository.js';
+import type { ConnectionRow, MetaSelections } from '../types/meta.js';
 
 export const metaRouter = Router();
 

@@ -1,4 +1,4 @@
-import { env, isMetaConfigured } from '../config/env';
+import { env, isMetaConfigured } from '../config/env.js';
 import type {
   AdAccountNode,
   GraphListResponse,
@@ -8,7 +8,7 @@ import type {
   MetaAccessTokenResponse,
   MetaErrorBody,
   PageNode,
-} from '../types/meta';
+} from '../types/meta.js';
 
 const GRAPH_HOST = 'https://graph.facebook.com';
 

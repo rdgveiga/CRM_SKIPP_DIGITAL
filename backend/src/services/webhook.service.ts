@@ -1,18 +1,18 @@
-import { env } from '../config/env';
-import { error, info, warn } from '../lib/logger';
-import { getLead, parseLeadFields } from './metaGraph';
+import { env } from '../config/env.js';
+import { error, info, warn } from '../lib/logger.js';
+import { getLead, parseLeadFields } from './metaGraph.js';
 import {
   getConnection,
   insertLeadData,
   insertWebhookEvent,
   updateWebhookEvent,
-} from './repository';
+} from './repository.js';
 import type {
   LeadDataRow,
   WebhookChange,
   WebhookChangeValue,
   WebhookPayload,
-} from '../types/meta';
+} from '../types/meta.js';
 
 // =============================================================================
 // Verificação do webhook (handshake solicitado pela Meta ao configurar)

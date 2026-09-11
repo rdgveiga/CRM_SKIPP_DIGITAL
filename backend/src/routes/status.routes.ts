@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { asyncHandler } from '../lib/asyncHandler';
-import { isMetaConfigured, isSupabaseConfigured } from '../config/env';
-import { checkToken } from '../services/metaGraph';
+import { asyncHandler } from '../lib/asyncHandler.js';
+import { isMetaConfigured, isSupabaseConfigured } from '../config/env.js';
+import { checkToken } from '../services/metaGraph.js';
 import {
   getConnectionStatus,
   getLastLead,
   getLastWebhookEvent,
-} from '../services/repository';
+} from '../services/repository.js';
 
 export const statusRouter = Router();
 
@@ -55,7 +55,7 @@ async function getActiveToken(): Promise<string | null> {
     return null;
   }
   // O token em si é lido apenas quando preciso (no checkToken)
-  const { getConnection } = await import('../services/repository');
+  const { getConnection } = await import('../services/repository.js');
   const row = await getConnection();
   return row?.access_token ?? null;
 }
@@ -63,7 +63,7 @@ async function getActiveToken(): Promise<string | null> {
 async function checkDb(): Promise<'connected' | 'disconnected'> {
   if (!isSupabaseConfigured()) return 'disconnected';
   try {
-    const { db } = await import('../services/supabase');
+    const { db } = await import('../services/supabase.js');
     const { error } = await db().from('meta_webhook_events').select('id').limit(1);
     return error ? 'disconnected' : 'connected';
   } catch {

@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { asyncHandler } from '../lib/asyncHandler';
-import { error as logError, info, warn } from '../lib/logger';
-import { processWebhookPayload, verifyWebhook } from '../services/webhook.service';
-import type { WebhookPayload } from '../types/meta';
+import { asyncHandler } from '../lib/asyncHandler.js';
+import { error as logError, info, warn } from '../lib/logger.js';
+import { processWebhookPayload, verifyWebhook } from '../services/webhook.service.js';
+import type { WebhookPayload } from '../types/meta.js';
 
 export const webhookRouter = Router();
 

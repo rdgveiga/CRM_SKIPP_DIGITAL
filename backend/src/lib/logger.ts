@@ -8,7 +8,7 @@ export async function log(level: LogLevel, message: string, context?: unknown): 
   const entry = { level, message, context: context ?? null };
 
   try {
-    const { db } = await import('../services/supabase');
+    const { db } = await import('../services/supabase.js');
     await db().from('meta_logs').insert(entry);
   } catch (err) {
     console.error('[meta_logs] falha ao gravar log no banco:', err);

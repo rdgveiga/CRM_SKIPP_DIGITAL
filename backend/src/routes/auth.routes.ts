@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { randomBytes } from 'node:crypto';
-import { env } from '../config/env';
-import { error as logError, info, warn } from '../lib/logger';
-import { buildOAuthDialogUrl, formatGraphError, getAccessTokenFromCode, getLongLivedToken, ensureMetaConfigured } from '../services/metaGraph';
-import { saveToken, setConnectionStatus } from '../services/repository';
+import { env } from '../config/env.js';
+import { error as logError, info, warn } from '../lib/logger.js';
+import { buildOAuthDialogUrl, formatGraphError, getAccessTokenFromCode, getLongLivedToken, ensureMetaConfigured } from '../services/metaGraph.js';
+import { saveToken, setConnectionStatus } from '../services/repository.js';
 
 export const authRouter = Router();
 
