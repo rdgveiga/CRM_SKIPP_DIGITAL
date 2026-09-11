@@ -9,6 +9,10 @@
   },
   "rewrites": [
     {
+      "source": "/api/meta/:path*",
+      "destination": "/api/meta?path=:path*"
+    },
+    {
       "source": "/:path((?!api/).*)",
       "destination": "/index.html"
     }
