@@ -4,8 +4,10 @@ import { env } from './config/env.js';
 import { ApiError } from './lib/asyncHandler.js';
 import { error as logError } from './lib/logger.js';
 import { authRouter } from './routes/auth.routes.js';
+import { leadsRouter } from './routes/leads.routes.js';
 import { metaRouter } from './routes/meta.routes.js';
 import { statusRouter } from './routes/status.routes.js';
+import { syncRouter } from './routes/sync.routes.js';
 import { webhookRouter } from './routes/webhook.routes.js';
 
 export const app = express();
@@ -22,7 +24,9 @@ app.get('/api/health', (_req, res) => {
 // Rotas do módulo de Integração Meta Ads
 app.use('/api/meta', authRouter);
 app.use('/api/meta', metaRouter);
+app.use('/api/meta', syncRouter);
 app.use('/api/meta', webhookRouter);
+app.use('/api/leads', leadsRouter);
 app.use('/api', statusRouter);
 
 // 404 para rotas /api desconhecidas

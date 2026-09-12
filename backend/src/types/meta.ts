@@ -63,6 +63,9 @@ export interface GraphListResponse<T> extends MetaErrorBody {
 export interface WebhookChangeValue {
   leadgen_id?: string;
   form_id?: string;
+  page_id?: string;
+  ad_id?: string;
+  adgroup_id?: string;
   created_time?: number;
   is_locked?: boolean;
 }
@@ -126,6 +129,10 @@ export interface LeadDataRow {
   extra: unknown;
   raw: unknown;
   received_at: string;
+  ad_account_id?: string | null;
+  ad_account_name?: string | null;
+  status?: string | null;
+  updated_at?: string | null;
 }
 
 export interface LogRow {

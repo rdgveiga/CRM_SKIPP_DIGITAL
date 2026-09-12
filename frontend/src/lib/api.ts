@@ -34,4 +34,19 @@ export const api = {
   lastLead: () => request<{ data: LeadDataRow | null }>('/api/meta/last-lead'),
   logs: (limit = 60) => request<{ data: LogRow[] }>(`/api/meta/logs?limit=${limit}`),
   diagnostics: () => request<Diagnostics>('/api/diagnostics'),
+  sync: () => request<{ data: { pages: number; adAccounts: number; forms: number } }>('/api/meta/sync', { method: 'POST' }),
+  resources: () =>
+    request<{ data: { pages: { page_id: string; name: string }[]; adAccounts: { ad_account_id: string; name: string }[]; forms: { form_id: string; name: string; page_id: string | null }[] } }>('/api/meta/resources'),
+  leads: (params: Record<string, string | number | undefined> = {}) => {
+    const qs = new URLSearchParams();
+    for (const [k, v] of Object.entries(params)) if (v !== undefined && v !== '') qs.set(k, String(v));
+    return request<{ data: Record<string, unknown>[]; total: number }>(`/api/leads${qs.toString() ? `?${qs}` : ''}`);
+  },
+  lead: (id: string) => request<{ data: Record<string, unknown> }>(`/api/leads/${id}`),
+  updateLeadStatus: (id: string, status: string, notes?: string) =>
+    request<{ data: Record<string, unknown> }>(`/api/leads/${id}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, notes }),
+    }),
 };

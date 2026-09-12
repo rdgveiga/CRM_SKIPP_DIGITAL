@@ -2,9 +2,12 @@ import { env } from '../config/env.js';
 import { error, info, warn } from '../lib/logger.js';
 import { getLead, parseLeadFields } from './metaGraph.js';
 import {
+  findLeadByLeadId,
+  findWebhookByLeadId,
   getConnection,
   insertLeadData,
   insertWebhookEvent,
+  syncCrmLead,
   updateWebhookEvent,
 } from './repository.js';
 import type {
@@ -103,6 +106,18 @@ export async function processWebhookPayload(payload: WebhookPayload): Promise<{ 
   for (const event of events) {
     let eventId: string | null = null;
     try {
+      // Idempotência: se lead já existe, não reprocessa Graph API, só garante crm sync
+      const existingLead = await findLeadByLeadId(event.leadId).catch(() => null);
+      if (existingLead) {
+        const existingEvent = await findWebhookByLeadId(event.leadId).catch(() => null);
+        if (existingEvent) {
+          info('Lead duplicado ignorado (idempotência)', { lead_id: event.leadId });
+          await syncCrmLead(event.leadId).catch(() => undefined);
+          processed += 1;
+          continue;
+        }
+      }
+
       const row = await insertWebhookEvent({
         event_type: 'leadgen',
         lead_id: event.leadId,
@@ -149,8 +164,17 @@ export async function processWebhookPayload(payload: WebhookPayload): Promise<{ 
         email: parsed.email,
         extra: parsed.extra,
         raw: lead,
-      };
+        status: 'novo',
+        updated_at: new Date().toISOString(),
+      } as unknown as Partial<LeadDataRow> & { lead_id: string };
+      // ad_account da seleção atual (se houver) e do webhook value
+      const webhookAdId = (event.changeValue as { ad_id?: string }).ad_id ?? null;
+      if (webhookAdId) (leadData as Record<string, unknown>).ad_account_id = webhookAdId;
+      if (connection?.ad_account_id) (leadData as Record<string, unknown>).ad_account_id = connection.ad_account_id;
+      if (connection?.ad_account_name) (leadData as Record<string, unknown>).ad_account_name = connection.ad_account_name;
+
       await insertLeadData(leadData);
+      await syncCrmLead(event.leadId).catch((e) => warn('Falha ao sync crm_leads', { lead_id: event.leadId, error: String(e) }));
 
       await updateWebhookEvent(eventId, {
         status: 'processed',

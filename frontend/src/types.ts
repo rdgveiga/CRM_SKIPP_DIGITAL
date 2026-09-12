@@ -44,6 +44,27 @@ export type LeadDataRow = {
   extra: Record<string, string> | null;
   raw: unknown;
   received_at: string;
+  ad_account_id?: string | null;
+  ad_account_name?: string | null;
+  status?: string | null;
+};
+
+export type CrmLead = {
+  id: string;
+  lead_id: string;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  page_id: string | null;
+  page_name: string | null;
+  form_id: string | null;
+  form_name: string | null;
+  ad_account_id: string | null;
+  ad_account_name: string | null;
+  status: 'novo' | 'contato_realizado' | 'qualificado' | 'agendamento' | 'cliente' | 'perdido';
+  received_at: string;
+  updated_at: string | null;
+  extra: Record<string, string> | null;
 };
 
 export type LogRow = {
