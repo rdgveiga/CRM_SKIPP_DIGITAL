@@ -39,6 +39,49 @@ async function graphGet<T>(path: string, params: Record<string, string>): Promis
   return body;
 }
 
+async function graphGetAll<T>(path: string, params: Record<string, string>): Promise<T[]> {
+  const all: T[] = [];
+  let after: string | undefined;
+  let url: string | null = null;
+
+  do {
+    const pageParams: Record<string, string> = { ...params, limit: '100' };
+    if (after) pageParams.after = after;
+
+    const qs = new URLSearchParams(pageParams).toString();
+    const fetchUrl = url ?? `${GRAPH_HOST}/${env.metaApiVersion}/${path}?${qs}`;
+
+    const res = await fetch(fetchUrl, { headers: { accept: 'application/json' } });
+    const body = (await res.json()) as GraphListResponse<T> & MetaErrorBody;
+
+    if (!res.ok || body.error) {
+      const message = body.error?.message ?? `Graph API respondeu com status ${res.status}`;
+      const code = body.error?.code;
+      throw new Error(message + (code ? ` (código ${code})` : ''));
+    }
+
+    if (body.data) all.push(...body.data);
+
+    const next = (body as unknown as { paging?: { cursors?: { after?: string }; next?: string } }).paging?.next;
+    const cursorAfter = (body as unknown as { paging?: { cursors?: { after?: string } } }).paging?.cursors?.after;
+
+    if (next && cursorAfter && body.data?.length === 100) {
+      after = cursorAfter;
+      url = null;
+    } else if (next) {
+      url = next;
+      after = undefined;
+    } else {
+      url = null;
+      after = undefined;
+    }
+
+    if (all.length >= 500) break;
+  } while (url || after);
+
+  return all;
+}
+
 // =============================================================================
 // OAuth (fluxo oficial de autenticação da Meta)
 // =============================================================================
@@ -91,31 +134,28 @@ export function getLongLivedToken(shortLivedToken: string): Promise<MetaAccessTo
 // Leitura de recursos autorizados
 // =============================================================================
 
-/** Páginas do Facebook do usuário autenticado: GET /me/accounts */
+/** Páginas do Facebook do usuário autenticado: GET /me/accounts (paginado) */
 export async function getPages(token: string): Promise<PageNode[]> {
-  const res = await graphGet<GraphListResponse<PageNode>>('me/accounts', {
+  return graphGetAll<PageNode>('me/accounts', {
     access_token: token,
     fields: 'id,name,category',
   });
-  return res.data ?? [];
 }
 
-/** Contas de anúncio do usuário autenticado: GET /me/adaccounts */
+/** Contas de anúncio do usuário autenticado: GET /me/adaccounts (paginado) */
 export async function getAdAccounts(token: string): Promise<AdAccountNode[]> {
-  const res = await graphGet<GraphListResponse<AdAccountNode>>('me/adaccounts', {
+  return graphGetAll<AdAccountNode>('me/adaccounts', {
     access_token: token,
     fields: 'id,name,account_status,currency',
   });
-  return res.data ?? [];
 }
 
-/** Formulários de Lead Ads de uma conta de anúncios: GET /act_{id}/leadgen_forms */
+/** Formulários de Lead Ads de uma conta de anúncios: GET /act_{id}/leadgen_forms (paginado) */
 export async function getLeadGenForms(token: string, adAccountId: string): Promise<LeadGenFormNode[]> {
-  const res = await graphGet<GraphListResponse<LeadGenFormNode>>(`act_${sanitizeAdAccountId(adAccountId)}/leadgen_forms`, {
+  return graphGetAll<LeadGenFormNode>(`act_${sanitizeAdAccountId(adAccountId)}/leadgen_forms`, {
     access_token: token,
     fields: 'id,name,page_id,page{id,name}',
   });
-  return res.data ?? [];
 }
 
 /** Verificação leve de que o token ainda é válido: GET /me */

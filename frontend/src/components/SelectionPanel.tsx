@@ -25,9 +25,9 @@ export function SelectionPanel({
   useEffect(() => {
     if (!connection?.connected) return;
     setLoadingPages(true);
-    api.pages().then((r) => setPages(r.data)).catch(() => {}).finally(() => setLoadingPages(false));
+    api.pages().then((r) => setPages(r.data)).catch((e) => console.error('pages:', e)).finally(() => setLoadingPages(false));
     setLoadingAccounts(true);
-    api.adAccounts().then((r) => setAdAccounts(r.data)).catch(() => {}).finally(() => setLoadingAccounts(false));
+    api.adAccounts().then((r) => setAdAccounts(r.data)).catch((e) => console.error('adAccounts:', e)).finally(() => setLoadingAccounts(false));
   }, [connection?.connected]);
 
   useEffect(() => {

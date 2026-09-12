@@ -46,7 +46,7 @@ export const env = {
   metaScopes: load(
     'META_SCOPE',
     false,
-    'pages_show_list,pages_read_engagement,ads_management,leads_retrieval'
+    'pages_show_list,pages_read_engagement,ads_management,ads_read,leads_retrieval,business_management'
   ),
   webhookVerifyToken: load('META_WEBHOOK_VERIFY_TOKEN', false, 'skipp-digital-meta-verify-token'),
 
