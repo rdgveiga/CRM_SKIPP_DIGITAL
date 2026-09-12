@@ -11,16 +11,38 @@ function load(name: string, required: boolean, fallback: string): string {
   return value.trim();
 }
 
+function vercelUrl(): string | null {
+  const v = process.env.VERCEL_URL?.trim();
+  if (v) return v.startsWith('http') ? v : `https://${v}`;
+  return null;
+}
+
+const resolvedFrontendUrl = (() => {
+  const explicit = load('FRONTEND_URL', false, '');
+  if (explicit) return explicit;
+  const v = vercelUrl();
+  if (v) return v;
+  return 'http://localhost:5173';
+})();
+
+const resolvedRedirectUri = (() => {
+  const explicit = load('META_REDIRECT_URI', false, '');
+  if (explicit) return explicit;
+  const v = vercelUrl();
+  if (v) return `${v}/api/meta/auth/callback`;
+  return '';
+})();
+
 export const env = {
   nodeEnv: load('NODE_ENV', false, 'development'),
   port: Number(load('PORT', false, '4000')),
-  frontendUrl: load('FRONTEND_URL', false, 'http://localhost:5173'),
-  corsOrigin: load('CORS_ORIGIN', false, 'http://localhost:5173'),
+  frontendUrl: resolvedFrontendUrl,
+  corsOrigin: load('CORS_ORIGIN', false, resolvedFrontendUrl),
 
   metaAppId: load('META_APP_ID', false, ''),
   metaAppSecret: load('META_APP_SECRET', false, ''),
   metaApiVersion: load('META_API_VERSION', false, 'v22.0'),
-  metaRedirectUri: load('META_REDIRECT_URI', false, ''),
+  metaRedirectUri: resolvedRedirectUri,
   metaScopes: load(
     'META_SCOPE',
     false,

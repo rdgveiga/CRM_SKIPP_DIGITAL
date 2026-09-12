@@ -34,8 +34,17 @@ authRouter.get('/auth/start', (_req, res) => {
     info('Iniciando fluxo OAuth da Meta', { redirectTo: 'facebook.com/dialog/oauth' });
     res.redirect(url);
   } catch (err) {
-    logError('Falha ao iniciar OAuth da Meta', { error: String(err) });
-    res.status(500).json({ error: err instanceof Error ? err.message : 'Erro interno' });
+    const message = err instanceof Error ? err.message : 'Erro interno';
+    logError('Falha ao iniciar OAuth da Meta', { error: message });
+    // Em vez de JSON branco (quebra na Vercel), redireciona ao frontend para exibir banner
+    const reason = encodeURIComponent(message);
+    // Se frontendUrl não estiver configurado corretamente, tenta fallback para referer/origin
+    const frontend = env.frontendUrl || _req.headers.origin || '/';
+    // Evita loop se frontend for localhost em prod
+    if (frontend.startsWith('http')) {
+      return res.redirect(`${frontend}/?meta=error&reason=${reason}`);
+    }
+    res.status(500).json({ error: message });
   }
 });
 
