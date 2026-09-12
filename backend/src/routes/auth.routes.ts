@@ -64,8 +64,9 @@ authRouter.get('/auth/callback', async (req, res) => {
     return res.redirect(`${env.frontendUrl}/?meta=error&reason=${encodeURIComponent(`Meta: ${detail} (${error})`)}`);
   }
   if (!code) {
-    warn('Callback sem code e sem error da Meta', { query: req.query });
-    return res.redirect(`${env.frontendUrl}/?meta=error&reason=no_code`);
+    const fullQuery = new URLSearchParams(req.query as Record<string, string>).toString() || 'vazio';
+    warn('Callback sem code e sem error da Meta', { query: req.query, fullQuery });
+    return res.redirect(`${env.frontendUrl}/?meta=error&reason=${encodeURIComponent(`no_code - query: ${fullQuery}`)}`);
   }
   if (expectedState && state !== expectedState) {
     warn('State do OAuth não confere (possível CSRF)', { received: state });
