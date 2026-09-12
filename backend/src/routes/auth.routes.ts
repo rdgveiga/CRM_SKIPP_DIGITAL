@@ -53,9 +53,20 @@ authRouter.get('/auth/start', (_req, res) => {
 authRouter.get('/auth/callback', async (req, res) => {
   const code = String(req.query.code ?? '');
   const state = String(req.query.state ?? '');
+  const error = String(req.query.error ?? '');
+  const errorDesc = String(req.query.error_description ?? '');
+  const errorReason = String(req.query.error_reason ?? '');
   const expectedState = readCookie(req.headers.cookie, STATE_COOKIE);
 
-  if (!code) return res.redirect(`${env.frontendUrl}/?meta=error&reason=no_code`);
+  if (error) {
+    const detail = errorDesc || errorReason || error;
+    warn('Meta retornou erro no callback OAuth', { error, errorDesc, errorReason });
+    return res.redirect(`${env.frontendUrl}/?meta=error&reason=${encodeURIComponent(`Meta: ${detail} (${error})`)}`);
+  }
+  if (!code) {
+    warn('Callback sem code e sem error da Meta', { query: req.query });
+    return res.redirect(`${env.frontendUrl}/?meta=error&reason=no_code`);
+  }
   if (expectedState && state !== expectedState) {
     warn('State do OAuth não confere (possível CSRF)', { received: state });
     return res.redirect(`${env.frontendUrl}/?meta=error&reason=invalid_state`);
