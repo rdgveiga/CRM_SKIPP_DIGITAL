@@ -15,8 +15,23 @@ import { LastLeadCard } from './components/LastLeadCard';
 import { LogsPanel } from './components/LogsPanel';
 import { DiagnosticsPanel } from './components/DiagnosticsPanel';
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
 
 export default function App() {
+  const isPrivacyPage = typeof window !== 'undefined' && window.location.pathname === '/privacy';
+  if (isPrivacyPage) {
+    return (
+      <div className="min-h-screen bg-white">
+        <PrivacyPolicy />
+        <div className="py-6 text-center">
+          <a href="/" className="text-sm text-indigo-600 hover:underline">
+            ← Voltar ao CRM
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   const [connection, setConnection] = useState<ConnectionStatus | null>(null);
   const [lastEvent, setLastEvent] = useState<WebhookEventRow | null>(null);
   const [lastLead, setLastLead] = useState<LeadDataRow | null>(null);
@@ -166,7 +181,16 @@ export default function App() {
       </main>
 
       <footer className="border-t border-slate-200 bg-white/50 py-4 text-center text-xs text-slate-400">
-        CRM Skipp Digital — Laboratório de Integração Meta Ads
+        <div>CRM Skipp Digital — Laboratório de Integração Meta Ads</div>
+        <div className="mt-1">
+          <a href="/privacy" className="text-indigo-600 hover:underline">
+            Política de Privacidade
+          </a>
+          {' · '}
+          <a href="/privacy" className="text-indigo-600 hover:underline">
+            Exclusão de dados
+          </a>
+        </div>
       </footer>
     </div>
   );
