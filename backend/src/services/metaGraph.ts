@@ -144,6 +144,13 @@ export function sanitizeAdAccountId(id: string): string {
 
 export function formatGraphError(err: unknown): string {
   if (err instanceof Error) return err.message;
+  if (err && typeof err === 'object') {
+    const e = err as Record<string, unknown>;
+    const msg = (e.message as string) ?? (e.error_description as string) ?? (e.error as string) ?? (e.details as string) ?? (e.hint as string);
+    const code = (e.code as string) ?? (e.status as string);
+    if (msg) return code ? `${msg} (código ${code})` : String(msg);
+    try { return JSON.stringify(err); } catch { /* fallback */ }
+  }
   return String(err);
 }
 

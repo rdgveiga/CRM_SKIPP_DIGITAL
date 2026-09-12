@@ -39,10 +39,17 @@ async function checkMetaApi(): Promise<{ status: 'connected' | 'disconnected'; d
     cachedMetaApiCheck = { ...result, at: Date.now() };
     return result;
   } catch (err) {
-    const result = {
-      status: 'disconnected' as const,
-      detail: err instanceof Error ? err.message : String(err),
-    };
+    const detail = (() => {
+      if (err instanceof Error) return err.message;
+      if (err && typeof err === 'object') {
+        const e = err as Record<string, unknown>;
+        const msg = (e.message as string) ?? (e.error_description as string) ?? (e.details as string) ?? (e.hint as string);
+        if (msg) return String(msg);
+        try { return JSON.stringify(err); } catch { return String(err); }
+      }
+      return String(err);
+    })();
+    const result = { status: 'disconnected' as const, detail: detail || '[erro sem detalhes]' };
     cachedMetaApiCheck = { ...result, at: Date.now() };
     return result;
   }
